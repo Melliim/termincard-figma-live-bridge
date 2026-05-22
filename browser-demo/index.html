@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TerminCard · Figma Live Bridge</title>
+    <link rel="stylesheet" href="./design-tokens.css" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero">
+        <p class="eyebrow">Figma → Bridge Server → Browser Demo</p>
+        <h1>TerminCard Live Bridge</h1>
+        <p class="lede">
+          This page uses the CSS tokens that the Figma plugin can sync through the local bridge server.
+          Change the state/tokens in Figma, press <strong>Sync to Web Demo</strong>, and this browser demo updates.
+        </p>
+      </section>
+
+      <section class="demo-grid">
+        <article class="panel">
+          <div class="panel-header">
+            <h2>Clickable implementation</h2>
+            <p>The appointment status is app data. The look comes from Figma-synced tokens.</p>
+          </div>
+
+          <div class="controls" aria-label="Status controls">
+            <button data-set-status="available" class="active">Verfügbar</button>
+            <button data-set-status="waitlist">Warteliste</button>
+            <button data-set-status="full">Ausgebucht</button>
+          </div>
+
+          <article class="termin-card" data-status="available" id="terminCard">
+            <div class="badge" id="badge">VERFÜGBAR</div>
+            <div class="card-content">
+              <h3>Personalausweis beantragen</h3>
+              <p>Bürgerbüro Mitte</p>
+              <p>24. Mai 2026 · 10:30 Uhr</p>
+            </div>
+            <button class="booking-button" id="actionButton">Termin buchen</button>
+          </article>
+        </article>
+
+        <article class="panel code-panel">
+          <div class="panel-header">
+            <h2>What changed?</h2>
+            <p>The page imports <code>design-tokens.css</code>, which the bridge server writes.</p>
+          </div>
+          <pre><code id="htmlSnippet"></code></pre>
+          <pre><code id="cssSnippet"></code></pre>
+          <button id="reloadTokens">Reload synced tokens now</button>
+          <p class="sync-state" id="syncState">Checking bridge server...</p>
+        </article>
+      </section>
+
+      <section class="explain panel">
+        <h2>Presentation sentence</h2>
+        <p>
+          Figma does not decide whether a real appointment is booked. The app decides the status.
+          But Figma can define the allowed states, names, and visual tokens. The bridge syncs those design decisions into the web project.
+        </p>
+      </section>
+    </main>
+    <script type="module" src="./script.js"></script>
+  </body>
+</html>

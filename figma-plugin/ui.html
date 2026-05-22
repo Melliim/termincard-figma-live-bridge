@@ -1,0 +1,216 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 16px; font-family: Inter, Arial, sans-serif; color: #172033; background: #fff; }
+    h1 { font-size: 20px; margin: 0 0 6px; }
+    h2 { font-size: 14px; margin: 18px 0 8px; }
+    h3 { font-size: 13px; margin: 0 0 8px; }
+    p { font-size: 12px; line-height: 1.45; color: #5c6472; margin: 0 0 12px; }
+    button { border: 0; border-radius: 10px; padding: 10px 12px; font-weight: 800; cursor: pointer; background: #eceef4; color: #172033; }
+    button.primary { width: 100%; background: #172033; color: white; margin: 8px 0; }
+    button.secondary { width: 100%; background: #e7eefc; color: #1e3a8a; margin-top: 8px; }
+    button.sync { width: 100%; background: #0f766e; color: white; margin-top: 8px; }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .row button { flex: 1; min-width: 100px; }
+    .box { border: 1px solid #e4e7ef; border-radius: 14px; padding: 12px; margin-top: 10px; background: #fafbfe; }
+    .token-grid { display: grid; gap: 10px; }
+    .token-card { border: 1px solid #e4e7ef; border-radius: 14px; padding: 12px; background: #ffffff; }
+    .token-card.available { border-left: 5px solid #8ED9AC; }
+    .token-card.waitlist { border-left: 5px solid #F5D36B; }
+    .token-card.full { border-left: 5px solid #D1D5DB; }
+    .token-pair-note { font-size: 11px; color: #70798b; margin: 2px 0 8px; }
+    .connected { color: #0f766e; font-weight: 800; }
+    .not { color: #a16207; font-weight: 800; }
+    .preview-card { border: 2px solid #8ED9AC; border-radius: 18px; padding: 16px; background: #fff; display: flex; flex-direction: column; gap: 10px; }
+    .badge { width: fit-content; border-radius: 999px; padding: 7px 11px; font-size: 11px; font-weight: 900; letter-spacing: .05em; }
+    .title { font-weight: 900; font-size: 17px; }
+    .meta { color: #626b7c; font-size: 12px; }
+    .action { width: fit-content; border-radius: 999px; padding: 9px 12px; font-size: 12px; font-weight: 900; color: white; }
+    pre { background: #111827; color: #edf2ff; border-radius: 12px; padding: 12px; overflow: auto; font-size: 11px; line-height: 1.45; max-height: 145px; }
+    .small { font-size: 11px; color: #70798b; }
+    label { display: grid; grid-template-columns: 1fr 96px; gap: 8px; align-items: center; font-size: 12px; margin: 6px 0; }
+    input { border: 1px solid #d8dce8; border-radius: 8px; padding: 7px; font: inherit; }
+  </style>
+</head>
+<body>
+  <h1>TerminCard Live Bridge</h1>
+  <p>Figma card → plugin data → generated CSS file → browser demo.</p>
+
+  <button class="primary" id="createCards">1 · Drei Figma-Cards erzeugen</button>
+
+  <div class="box">
+    <div id="connection" class="not">No TerminCard selected.</div>
+    <p class="small" id="nodeName">Select a generated card on the canvas.</p>
+  </div>
+
+  <h2>2 · Selected Figma card status</h2>
+  <p class="small">Click one of these to set the selected Figma card to a defined component state.</p>
+  <div class="row">
+    <button data-status="available">Verfügbar</button>
+    <button data-status="waitlist">Warteliste</button>
+    <button data-status="full">Ausgebucht</button>
+  </div>
+
+  <h2>3 · Design token pairs to sync</h2>
+  <p class="small">Each status has a background + text pair. Changing these fields previews the active token pair on the selected Figma card. Sync exports all pairs to the web demo.</p>
+  <div class="token-grid">
+    <section class="token-card available">
+      <h3>Available token pair</h3>
+      <p class="token-pair-note">Used for <code>data-status="available"</code>.</p>
+      <label>Badge background <input data-token="available.bg" data-default="#DFF7E8" value="#DFF7E8" /></label>
+      <label>Badge text <input data-token="available.text" data-default="#126B3A" value="#126B3A" /></label>
+    </section>
+    <section class="token-card waitlist">
+      <h3>Waitlist token pair</h3>
+      <p class="token-pair-note">Used for <code>data-status="waitlist"</code>.</p>
+      <label>Badge background <input data-token="waitlist.bg" data-default="#FFF0C2" value="#FFF0C2" /></label>
+      <label>Badge text <input data-token="waitlist.text" data-default="#7A4B00" value="#7A4B00" /></label>
+    </section>
+    <section class="token-card full">
+      <h3>Full token pair</h3>
+      <p class="token-pair-note">Used for <code>data-status="full"</code>.</p>
+      <label>Badge background <input data-token="full.bg" data-default="#F3F4F6" value="#F3F4F6" /></label>
+      <label>Badge text <input data-token="full.text" data-default="#6B7280" value="#6B7280" /></label>
+    </section>
+  </div>
+  <button class="secondary" id="resetTokens">Reset token pairs to defaults</button>
+
+  <button class="sync" id="sync">4 · Sync token pairs to Web Demo</button>
+  <p class="small" id="syncStatus">Bridge server must run on http://localhost:3001.</p>
+
+  <h2>Live preview</h2>
+  <div class="preview-card" id="previewCard">
+    <div class="badge" id="badge">VERFÜGBAR</div>
+    <div class="title">Personalausweis beantragen</div>
+    <div class="meta">Bürgerbüro Mitte</div>
+    <div class="meta">24. Mai 2026 · 10:30 Uhr</div>
+    <div class="action" id="action">Termin buchen</div>
+  </div>
+
+  <h2>Generated code</h2>
+  <pre><code id="code"></code></pre>
+
+<script>
+const state = { connected: false, status: 'available', nodeName: '' };
+const config = {
+  available: { label: 'VERFÜGBAR', button: 'Termin buchen', border: '#8ED9AC' },
+  waitlist: { label: 'WARTELISTE', button: 'Auf Warteliste setzen', border: '#F5D36B' },
+  full: { label: 'AUSGEBUCHT', button: 'Nicht verfügbar', border: '#D1D5DB' }
+};
+
+function tokenObject() {
+  const tokens = {
+    available: { border: '#8ED9AC' },
+    waitlist: { border: '#F5D36B' },
+    full: { border: '#D1D5DB' }
+  };
+  document.querySelectorAll('[data-token]').forEach(input => {
+    const [status, key] = input.dataset.token.split('.');
+    tokens[status][key] = input.value.trim();
+  });
+  return tokens;
+}
+
+function resetTokenInputs() {
+  document.querySelectorAll('[data-token]').forEach(input => {
+    input.value = input.dataset.default;
+  });
+}
+
+function render() {
+  const tokens = tokenObject();
+  const s = state.status;
+  const connection = document.querySelector('#connection');
+  connection.textContent = state.connected ? 'Connected to selected Figma TerminCard.' : 'No TerminCard selected.';
+  connection.className = state.connected ? 'connected' : 'not';
+  document.querySelector('#nodeName').textContent = state.connected ? state.nodeName : 'Select a generated card on the canvas.';
+
+  const preview = document.querySelector('#previewCard');
+  preview.style.borderColor = tokens[s].border;
+  document.querySelector('#badge').textContent = config[s].label;
+  document.querySelector('#badge').style.background = tokens[s].bg;
+  document.querySelector('#badge').style.color = tokens[s].text;
+  document.querySelector('#action').textContent = config[s].button;
+  document.querySelector('#action').style.background = s === 'full' ? '#D8DBE3' : tokens[s].text;
+  document.querySelector('#action').style.color = s === 'full' ? tokens[s].text : '#FFFFFF';
+
+  document.querySelector('#code').textContent = `<article class="termin-card" data-status="${s}">\n  <span class="badge">${config[s].label}</span>\n  <h3>Personalausweis beantragen</h3>\n  <button>${config[s].button}</button>\n</article>\n\n:root {\n  --status-${s}-bg: ${tokens[s].bg};\n  --status-${s}-text: ${tokens[s].text};\n  --status-${s}-border: ${tokens[s].border};\n}`;
+}
+
+document.querySelector('#createCards').onclick = () => parent.postMessage({ pluginMessage: { type: 'create-cards', tokens: tokenObject() } }, '*');
+document.querySelectorAll('[data-status]').forEach(button => {
+  button.onclick = () => {
+    state.status = button.dataset.status;
+    parent.postMessage({ pluginMessage: { type: 'set-status', status: state.status, tokens: tokenObject() } }, '*');
+    render();
+  };
+});
+document.querySelector('#resetTokens').onclick = () => {
+  resetTokenInputs();
+  previewTokensOnSelectedCard();
+};
+
+function allTokenInputsValid() {
+  return Array.from(document.querySelectorAll('[data-token]')).every(input => /^#[0-9A-Fa-f]{6}$/.test(input.value.trim()));
+}
+
+let previewTimer = null;
+function previewTokensOnSelectedCard() {
+  render();
+  clearTimeout(previewTimer);
+  if (!state.connected || !allTokenInputsValid()) return;
+  previewTimer = setTimeout(() => {
+    parent.postMessage({
+      pluginMessage: {
+        type: 'preview-tokens',
+        status: state.status,
+        tokens: tokenObject()
+      }
+    }, '*');
+  }, 180);
+}
+
+document.querySelectorAll('[data-token]').forEach(input => input.addEventListener('input', previewTokensOnSelectedCard));
+
+document.querySelector('#sync').onclick = async () => {
+  const payload = {
+    source: 'figma-plugin',
+    component: 'TerminCard',
+    activeStatus: state.status,
+    tokens: tokenObject(),
+    layout: { radius: 18, padding: 18, gap: 12 },
+    generatedAt: new Date().toISOString()
+  };
+  const status = document.querySelector('#syncStatus');
+  status.textContent = 'Syncing...';
+  try {
+    const res = await fetch('http://localhost:3001/sync-tokens', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const json = await res.json();
+    status.textContent = json.ok ? 'Synced. The browser demo and project token files now use these token pairs.' : json.error;
+  } catch (error) {
+    status.textContent = 'Could not reach bridge server. Run: npm run bridge or npm start';
+  }
+};
+
+window.onmessage = (event) => {
+  const msg = event.data.pluginMessage;
+  if (!msg || msg.type !== 'selection') return;
+  state.connected = msg.connected;
+  if (msg.connected) {
+    state.status = msg.status || 'available';
+    state.nodeName = msg.nodeName;
+  }
+  render();
+};
+
+render();
+</script>
+</body>
+</html>

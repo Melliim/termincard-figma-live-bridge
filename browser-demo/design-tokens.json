@@ -1,0 +1,28 @@
+{
+  "source": "figma-plugin",
+  "component": "TerminCard",
+  "activeStatus": "waitlist",
+  "tokens": {
+    "available": {
+      "border": "#8ED9AC",
+      "bg": "#DFF7E8",
+      "text": "#126B3A"
+    },
+    "waitlist": {
+      "border": "#F5D36B",
+      "bg": "#FFF0C2",
+      "text": "#7A4B00"
+    },
+    "full": {
+      "border": "#D1D5DB",
+      "bg": "#F3F4F6",
+      "text": "#6B7280"
+    }
+  },
+  "layout": {
+    "radius": 18,
+    "padding": 18,
+    "gap": 12
+  },
+  "generatedAt": "2026-05-22T20:08:51.816Z"
+}

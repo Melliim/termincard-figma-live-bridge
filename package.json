@@ -1,0 +1,17 @@
+{
+  "name": "termincard-figma-live-bridge",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Connected Figma plugin + local bridge server + browser demo for a TerminCard component presentation.",
+  "scripts": {
+    "dev": "vite --host localhost browser-demo",
+    "bridge": "node bridge-server/server.js",
+    "start": "concurrently -n WEB,BRIDGE -c auto \"npm run dev\" \"npm run bridge\""
+  },
+  "devDependencies": {
+    "@vitejs/plugin-basic-ssl": "latest",
+    "concurrently": "latest",
+    "vite": "latest"
+  },
+  "dependencies": {}
+}

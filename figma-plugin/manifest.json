@@ -1,0 +1,19 @@
+{
+  "name": "TerminCard Live Bridge",
+  "id": "termincard-live-bridge-demo",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": [
+    "figma"
+  ],
+  "networkAccess": {
+    "allowedDomains": [
+      "http://localhost:3001"
+    ],
+    "reasoning": "Local development bridge server used to sync Figma design tokens to the browser demo.",
+    "devAllowedDomains": [
+      "http://localhost:3001"
+    ]
+  }
+}
