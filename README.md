@@ -102,19 +102,6 @@ If the browser does not update:
 4. In the browser, click `Reload synced tokens now`.
 5. If Figma cannot reach the bridge, re-import `figma-plugin/manifest.json`; the manifest includes development network access for localhost.
 
-## GitHub submission
-
-Do not push `node_modules` or ZIP files. Push the extracted project folder.
-
-```bash
-git init
-git add .
-git commit -m "Add TerminCard Figma live bridge demo"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/termincard-figma-live-bridge.git
-git push -u origin main
-```
-
 
 ## Token preview on selected Figma card
 
